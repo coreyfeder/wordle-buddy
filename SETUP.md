@@ -31,7 +31,7 @@
 
 **Test 3: Variable Length - 4 letters**
 - Create any 4-letter puzzle
-- Verify word length shows "4-letter word"
+- Verify permutations shows a 4-letter word
 - Verify permutations work correctly
 
 **Test 4: Variable Length - 6 or 7 letters**
@@ -48,10 +48,9 @@
 
 ### Panel Sections (Top to Bottom)
 
-1. **Word Length Badge** - e.g., "5-letter word" (green background)
-2. **Possible Permutations** - One pattern per line, monospace font
-3. **Your Notes** - Text area for your ideas
-4. **Constraint Details** - Collapsible section showing:
+1. **Possible Permutations** - One pattern per line, monospace font
+2. **Your Notes** - Text area for your ideas
+3. **Constraint Details** - Collapsible section showing:
    - Greens: Letters in correct positions
    - Yellows: Letters present but wrong position (with counts)
    - Grays: Letters absent from word
@@ -121,6 +120,7 @@ Content Script (content.js)
 - Second word suggestions (word-length specific)
 - "Enter default word" button
 - Pattern storage (not needed without suggestions)
+- Word length badge removed (UI clutter)
 
 ## Next Steps
 
