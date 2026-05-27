@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Wordle Buddy",
+  "version": "0.2.0",
+  "description": "Track constraints and generate permutations for Wordle puzzles of any length",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.nytimes.com/games/wordle/*",
+    "https://www.nytimes.com/games/create/wordle/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.nytimes.com/games/wordle/*",
+        "https://www.nytimes.com/games/create/wordle/*"
+      ],
+      "exclude_matches": [
+        "https://www.nytimes.com/games/wordle/archive",
+        "https://www.nytimes.com/games/wordle/archive/*"
+      ],
+      "js": [
+        "gameAdapter.js",
+        "permutationEngine.js",
+        "content.js"
+      ],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html"],
+      "matches": ["https://www.nytimes.com/*"]
+    }
+  ]
+}

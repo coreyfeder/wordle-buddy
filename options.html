@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wordle Buddy Settings</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 0;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 60px;
+    }
+
+    .header {
+      background: #6aaa64;
+      color: white;
+      padding: 24px 32px;
+      border-bottom: 3px solid #538d4e;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 32px;
+      padding-bottom: 80px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .setting-group {
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .setting-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .setting-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .preview-box {
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preview-box:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      min-width: 180px;
+      flex-shrink: 0;
+    }
+
+    .setting-description {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .setting-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      max-width: 300px;
+    }
+
+    select {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #6aaa64;
+      box-shadow: 0 0 0 2px rgba(106, 170, 100, 0.1);
+    }
+
+    input[type="number"] {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      width: 80px;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #6aaa64;
+      box-shadow: 0 0 0 2px rgba(106, 170, 100, 0.1);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .range-value {
+      display: inline-block;
+      min-width: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6aaa64;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 32px;
+      background: #f9f9f9;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .save-indicator {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #6aaa64;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .preview-box {
+      margin-top: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-box:last-child {
+      margin-bottom: 0;
+    }
+
+    .preview-label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 600;
+      flex-shrink: 0;
+      padding-left: 16px;
+    }
+
+    .preview-permutation {
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      letter-spacing: 0.12em;
+      text-align: center;
+      max-width: 320px;
+    }
+
+    .preview-notes {
+      font-family: 'Clear Sans', Arial, sans-serif;
+      font-size: 14px;
+      max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚙️ Wordle Buddy Settings</h1>
+      <p>Who's your buddy?</p>
+    </div>
+
+    <div class="content">
+      <!-- Display Settings -->
+      <div class="section">
+        <div class="setting-group">
+          <div class="setting-row">
+            <label class="setting-label">Zoom Level</label>
+            <div class="setting-control">
+              <input type="range" id="zoom-setting" min="80" max="150" step="10" value="100">
+              <span class="range-value" id="zoom-value">100%</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <label class="setting-label">Color Scheme</label>
+            <div class="setting-control">
+              <select id="color-scheme-setting">
+                <option value="auto">Auto (Match Game)</option>
+                <option value="light">Always Light</option>
+                <option value="dark">Always Dark</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-headers-setting" checked>
+              <span>Show Section Headers</span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="show-details-setting" checked>
+              <span>Show Constraint Details</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typography Settings -->
+      <div class="section">
+        <div class="setting-group">
+          <div class="setting-row">
+            <label class="setting-label">Permutations</label>
+            <div class="setting-control">
+              <select id="perm-font-setting">
+                <option value="monospace">Monospace</option>
+                <option value="sans-serif">Sans-Serif</option>
+                <option value="serif">Serif</option>
+              </select>
+              <input type="number" id="perm-size-setting" min="10" max="32" step="1" value="16">
+              <span style="font-size: 12px; color: #666;">px</span>
+            </div>
+          </div>
+          <div class="preview-box">
+            <div class="preview-label">Preview:</div>
+            <div class="preview-permutation" id="perm-preview">C_A_E</div>
+          </div>
+
+          <div class="setting-row">
+            <label class="setting-label">Notes</label>
+            <div class="setting-control">
+              <select id="notes-font-setting">
+                <option value="sans-serif">Sans-Serif</option>
+                <option value="monospace">Monospace</option>
+                <option value="serif">Serif</option>
+              </select>
+              <input type="number" id="notes-size-setting" min="10" max="24" step="1" value="14">
+              <span style="font-size: 12px; color: #666;">px</span>
+            </div>
+          </div>
+          <div class="preview-box">
+            <div class="preview-label">Preview:</div>
+            <div class="preview-notes" id="notes-preview">CRANE, STALE, SHOUT...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Settings are saved automatically • Version 0.2.0</p>
+    </div>
+  </div>
+
+  <div class="save-indicator" id="save-indicator">✓ Saved</div>
+
+  <script src="options.js"></script>
+</body>
+</html>

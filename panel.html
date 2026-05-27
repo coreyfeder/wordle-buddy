@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wordle Buddy Panel</title>
+</head>
+<body>
+  <div id="wordle-buddy-panel">
+    <div class="panel-header">
+      <h3>Wordle Buddy</h3>
+      <div class="header-buttons">
+        <!-- <button id="settings-btn" class="header-btn" title="Settings">⚙️</button> -->
+        <button id="toggle-panel" class="minimize-btn">−</button>
+      </div>
+    </div>
+    
+    <div class="panel-content">
+      <!-- Possible Permutations Section -->
+      <div class="section">
+        <h4>Possible Permutations</h4>
+        <div id="permutations-display" class="info-box">
+          <p class="placeholder">Play a word to see permutations</p>
+        </div>
+      </div>
+
+      <!-- User Notes Section -->
+      <div class="section notes-section">
+        <h4>Your Notes</h4>
+        <textarea 
+          id="user-notes" 
+          class="notes-area" 
+          placeholder="Jot down words you're considering..."></textarea>
+      </div>
+
+      <!-- Constraints Summary (Collapsible) -->
+      <div class="section" style="margin-bottom: 8px;">
+        <h4 class="collapsible-header" id="constraints-header">
+          <span>Constraint Details</span>
+          <span class="collapse-icon">▼</span>
+        </h4>
+        <div id="constraints-content" class="collapsible-content collapsed">
+          <div id="constraints-display" class="info-box">
+            <p class="placeholder">No constraints yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Section -->
+      <div class="section" id="status-section" style="display: none;">
+        <div id="status-display" class="status-box"></div>
+      </div>
+    </div>
+
+    <!-- Settings Overlay - DISABLED FOR NOW
+    <div id="settings-overlay" class="settings-overlay hidden">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h4>Settings</h4>
+          <button id="close-settings" class="close-btn">×</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-group">
+            <label>Zoom</label>
+            <input type="range" id="zoom-setting" min="80" max="150" step="10" value="100">
+            <span id="zoom-value">100%</span>
+          </div>
+
+          <div class="setting-group">
+            <label>Color Scheme</label>
+            <select id="color-scheme-setting">
+              <option value="auto">Auto (Match Game)</option>
+              <option value="light">Light Mode</option>
+              <option value="dark">Dark Mode</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label>
+              <input type="checkbox" id="show-details-setting" checked>
+              Show Constraint Details
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label>
+              <input type="checkbox" id="show-headers-setting" checked>
+              Show Section Headers
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label>Permutations Font</label>
+            <select id="perm-font-setting">
+              <option value="monospace">Courier New (Monospace)</option>
+              <option value="sans-serif">Clear Sans (Sans-Serif)</option>
+              <option value="system">System Default</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label>Permutations Size</label>
+            <select id="perm-size-setting">
+              <option value="small">Small (13px)</option>
+              <option value="medium" selected>Medium (15px)</option>
+              <option value="large">Large (18px)</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label>Notes Font</label>
+            <select id="notes-font-setting">
+              <option value="sans-serif" selected>Clear Sans</option>
+              <option value="monospace">Courier New</option>
+              <option value="system">System Default</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label>Notes Size</label>
+            <select id="notes-size-setting">
+              <option value="small">Small (12px)</option>
+              <option value="medium" selected>Medium (13px)</option>
+              <option value="large">Large (15px)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+  </div>
+</body>
+</html>
