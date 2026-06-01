@@ -3,32 +3,30 @@
 ## 📍 Project Location
 `/Users/corey/Documents/Categories/Projects/extensions/wordle-buddy/`
 
+> Ignore the `_archive/` subdirectory — old session files, not part of active project.
+
 ## 🎯 Current Status
-✅ **FULLY FUNCTIONAL** - All features working perfectly
+✅ **FULLY FUNCTIONAL** — v1.2.0
+⚠️ **Settings page UI is built; logic not yet implemented** (`options.js` is a stub)
 
 ## 🚀 Quick Start for New Session
 
-Use this exact initialization:
-
-```
-I'm working on the Wordle Buddy Chrome extension at:
-/Users/corey/Documents/Categories/Projects/extensions/wordle-buddy/
-
-The extension is fully functional. Please read SESSION_HANDOFF.md for complete context.
-
-I need help with: [state your request]
-```
+Use `NEW_SESSION_INIT.md` for the exact copy-paste initialization prompt.
 
 ## 🔑 Key Files
 
-**Core Logic** (read these first):
-- `permutationEngine.js` - THE BRAIN (especially `processGuess()` method)
-- `gameAdapter.js` - Reads Wordle DOM
-- `content.js` - UI coordinator
+**Core Logic**:
+- `permutationEngine.js` — THE BRAIN (especially `processGuess()`)
+- `gameAdapter.js` — Reads Wordle DOM
+- `content.js` — UI coordinator, drag logic, settings scaffolding
+
+**Settings (incomplete)**:
+- `options.html` — Settings page UI (complete)
+- `options.js` — Settings page logic (**stub, not yet implemented**)
 
 **Documentation**:
-- `SESSION_HANDOFF.md` - Complete technical context
-- `README.md` - User documentation
+- `SESSION_HANDOFF.md` — Complete technical context
+- `CHANGELOG.md` — Version history
 
 ## 🧠 Core Algorithm (30-second version)
 
@@ -37,7 +35,7 @@ I need help with: [state your request]
 // Track MAX occurrences across ALL guesses
 yellows[letter].maxKnown = Math.max(yellows[letter].maxKnown, knownCount);
 
-// Calculate yellows needed
+// Calculate yellows still needed
 yellows[letter].count = maxKnown - greensCount;
 ```
 
@@ -45,59 +43,57 @@ yellows[letter].count = maxKnown - greensCount;
 - EERIE → maxKnown=2, greens=1, yellows=1 ✓
 - SCENE → maxKnown=2, greens=2, yellows=0 ✓
 
-Without maxKnown, yellows would stay at 1 forever.
+**Also critical**: `invalidPositions` includes positions from BOTH `present` AND `absent` evaluations. Without this, gray positions appear in permutations.
 
-## 🛠️ Make Changes
+## 🛠️ Reload After Changes
 
 1. Edit files in the project directory
 2. `brave://extensions/` → click refresh (⟳)
 3. Reload Wordle page
 4. Test
 
-## 🧪 Test It
+## 🧪 Test Cases
 
-Answer: THEME
-- Guess: EERIE → Should show 3 permutations
-- Guess: SCENE → Should show 1 permutation: `__e_e`
+**Answer: THEME**
+- Guess EERIE → 3 permutations
+- Guess SCENE → 1 permutation (`__e_e`) → victory message fires
+
+**Answer: NEWLY** (tests gray position exclusion)
+- Guess ADIEU, STORY, ELEGY
+- E at position 3 in ELEGY is gray → must not appear at that position in any permutation
 
 ## 👤 User Context
 
-- Name: Hugh (Corey)
-- Style: Iterative, test-driven, values accuracy
-- Prefers: Direct feedback, concrete examples
-- Appreciates: Honesty, no sycophancy
+- **Name**: Hugh (Corey)
+- **Style**: Iterative, test-driven, values accuracy
+- **Prefers**: Direct feedback, concrete examples, no sycophancy
 
 ## ⚠️ Critical: Don't Break This
 
-The `processGuess()` method in `permutationEngine.js` is the core algorithm. Any changes to how it tracks maxKnown or calculates yellows.count must maintain the pattern:
-
-```
-maxKnown = max across all guesses
-yellows.count = maxKnown - greensCount
-```
+The `processGuess()` method in `permutationEngine.js` is the core algorithm. Do not change the maxKnown pattern or the invalidPositions logic without a confirmed bug and a test case.
 
 ## 📊 What's Working
 
-✅ Variable word length (4-7)
-✅ Repeated letter handling
+✅ Variable word length (4–7)
+✅ Repeated letter handling (maxKnown)
+✅ Gray position exclusion (invalidPositions fix)
 ✅ Permutation generation
-✅ User notes (persist)
-✅ Excluded letters (sorted)
-✅ UI (clean, minimal)
+✅ Victory message (hides answer when solved)
+✅ User notes (persist across guesses and reloads)
+✅ Excluded letters display (sorted)
+✅ Draggable panel (position saved)
+✅ Resizable panel
+✅ Settings page UI
 
-## 🎨 What's Intentionally NOT Included
+⚠️ Settings page logic (options.js — stub only)
+
+## 🎨 Intentionally NOT Included
 
 ❌ Default starting words
 ❌ Second word suggestions
-❌ Auto-solve
-❌ Word dictionary
-
-(These assume 5-letter words or reduce user agency)
-
-## 📝 Last Session Summary
-
-Built a complete Chrome extension from scratch using Hugh's layered constraint approach (Green/Yellow/Gray). Fixed critical bug in yellow count calculation using maxKnown pattern. All cosmetic tweaks completed. Extension is production-ready.
+❌ Auto-solve / word dictionary
+❌ Letter frequency analysis
 
 ---
 
-**Read SESSION_HANDOFF.md for full technical details.**
+**Read `SESSION_HANDOFF.md` for full technical details.**
