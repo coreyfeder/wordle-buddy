@@ -8,7 +8,7 @@ Future sessions should focus on enhancements or bug fixes as they arise.
 ## Project Location
 `/Users/corey/Documents/Categories/Projects/extensions/wordle-buddy/`
 
-> **Note**: Ignore the `_archive/` subdirectory. It contains old session-init files and is not part of the active project.
+> **Note**: Ignore the `archive/` subdirectory. It contains old session-init files and is not part of the active project.
 
 ---
 
@@ -68,7 +68,7 @@ wordle-buddy/
 ├── options.js             # Settings page logic (STUB — not yet implemented)
 ├── icon*.png              # Extension icons
 ├── CHANGELOG.md           # Version history
-└── _archive/              # Old session files — ignore
+└── archive/               # Old session files — ignore
 ```
 
 ---

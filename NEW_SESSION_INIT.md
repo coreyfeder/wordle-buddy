@@ -18,7 +18,7 @@ Key facts:
 - The maxKnown pattern is critical: `yellows[letter].count = maxKnown - greensCount`
 - `invalidPositions` must include both `present` AND `absent` evaluation positions
 - Settings page UI exists (`options.html`) but `options.js` is a stub — not yet functional
-- Ignore the `_archive/` subdirectory
+- Ignore the `archive/` subdirectory
 
 **My request**: [State your specific request here]
 

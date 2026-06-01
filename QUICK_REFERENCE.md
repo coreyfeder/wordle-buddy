@@ -3,7 +3,7 @@
 ## 📍 Project Location
 `/Users/corey/Documents/Categories/Projects/extensions/wordle-buddy/`
 
-> Ignore the `_archive/` subdirectory — old session files, not part of active project.
+> Ignore the `archive/` subdirectory — old session files, not part of active project.
 
 ## 🎯 Current Status
 ✅ **FULLY FUNCTIONAL** — v1.2.0
