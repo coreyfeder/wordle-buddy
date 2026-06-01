@@ -135,6 +135,8 @@ async function injectPanel() {
     setupEventListeners();
     restoreNotes();
     restorePosition();
+    restoreSize();
+    setupSizeObserver();
     applyStoredSettings();
     
     console.log('Panel fully initialized');
@@ -251,6 +253,33 @@ function restorePosition() {
       panelElement.style.bottom = 'auto';
     }
   });
+}
+
+function saveSize(width, height) {
+  chrome.storage.local.set({ panelSize: { width, height } });
+}
+
+function restoreSize() {
+  chrome.storage.local.get(['panelSize'], (result) => {
+    if (result.panelSize) {
+      const { width, height } = result.panelSize;
+      panelElement.style.width  = `${width}px`;
+      panelElement.style.height = `${height}px`;
+    }
+  });
+}
+
+function setupSizeObserver() {
+  let debounceTimer;
+  const observer = new ResizeObserver(entries => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const entry = entries[entries.length - 1];
+      const { width, height } = entry.contentRect;
+      saveSize(Math.round(width), Math.round(height));
+    }, 300);
+  });
+  observer.observe(panelElement);
 }
 
 function saveNotes(notes) {
@@ -438,10 +467,6 @@ function applySettingToUI(key, value) {
   const panel = panelElement;
   
   switch (key) {
-    case 'zoom':
-      panel.style.fontSize = `${value}%`;
-      break;
-    
     case 'colorScheme': {
       // Reset all inline colour overrides first so switching between modes is clean
       panel.style.backgroundColor = '';

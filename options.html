@@ -265,14 +265,6 @@
       <div class="section">
         <div class="setting-group">
           <div class="setting-row">
-            <label class="setting-label">Zoom Level</label>
-            <div class="setting-control">
-              <input type="range" id="zoom-setting" min="80" max="150" step="10" value="100">
-              <span class="range-value" id="zoom-value">100%</span>
-            </div>
-          </div>
-
-          <div class="setting-row">
             <label class="setting-label">Color Scheme</label>
             <div class="setting-control">
               <select id="color-scheme-setting">
@@ -312,6 +304,10 @@
               </select>
               <input type="number" id="perm-size-setting" min="10" max="32" step="1" value="16">
               <span style="font-size: 12px; color: #666;">px</span>
+              <label class="checkbox-label" style="margin-left: 8px;">
+                <input type="checkbox" id="perm-bold-setting">
+                <span>Bold</span>
+              </label>
             </div>
           </div>
           <div class="preview-box">
@@ -323,12 +319,16 @@
             <label class="setting-label">Notes</label>
             <div class="setting-control">
               <select id="notes-font-setting">
-                <option value="sans-serif">Sans-Serif</option>
                 <option value="monospace">Monospace</option>
+                <option value="sans-serif">Sans-Serif</option>
                 <option value="serif">Serif</option>
               </select>
               <input type="number" id="notes-size-setting" min="10" max="24" step="1" value="14">
               <span style="font-size: 12px; color: #666;">px</span>
+              <label class="checkbox-label" style="margin-left: 8px;">
+                <input type="checkbox" id="notes-bold-setting">
+                <span>Bold</span>
+              </label>
             </div>
           </div>
           <div class="preview-box">

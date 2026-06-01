@@ -7,14 +7,15 @@
  */
 
 const defaultSettings = {
-  zoom: 100,
   colorScheme: 'auto',
   showDetails: true,
   showHeaders: true,
   permFont: 'monospace',
   permSize: 16,   // pixels
-  notesFont: 'sans-serif',
-  notesSize: 14   // pixels
+  permBold: false,
+  notesFont: 'monospace',
+  notesSize: 14,  // pixels
+  notesBold: false
 };
 
 // Font stacks shared by preview and (via content.js) the panel.
@@ -39,8 +40,8 @@ function loadSettings() {
   chrome.storage.local.get(['settings'], (result) => {
     const settings = { ...defaultSettings, ...(result.settings || {}) };
     applyToControls(settings);
-    updatePermPreview(settings.permFont, settings.permSize);
-    updateNotesPreview(settings.notesFont, settings.notesSize);
+    updatePermPreview(settings.permFont, settings.permSize, settings.permBold);
+    updateNotesPreview(settings.notesFont, settings.notesSize, settings.notesBold);
   });
 }
 
@@ -52,8 +53,10 @@ function applyToControls(settings) {
   document.getElementById('show-details-setting').checked = settings.showDetails;
   document.getElementById('perm-font-setting').value   = settings.permFont;
   document.getElementById('perm-size-setting').value   = settings.permSize;
+  document.getElementById('perm-bold-setting').checked  = settings.permBold;
   document.getElementById('notes-font-setting').value  = settings.notesFont;
   document.getElementById('notes-size-setting').value  = settings.notesSize;
+  document.getElementById('notes-bold-setting').checked = settings.notesBold;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,13 +75,6 @@ function saveSetting(key, value) {
 // ---------------------------------------------------------------------------
 
 function setupListeners() {
-  // Zoom
-  document.getElementById('zoom-setting').addEventListener('input', (e) => {
-    const value = parseInt(e.target.value, 10);
-    document.getElementById('zoom-value').textContent = value + '%';
-    saveSetting('zoom', value);
-  });
-
   // Color scheme
   document.getElementById('color-scheme-setting').addEventListener('change', (e) => {
     saveSetting('colorScheme', e.target.value);
@@ -98,32 +94,54 @@ function setupListeners() {
   document.getElementById('perm-font-setting').addEventListener('change', (e) => {
     const font = e.target.value;
     const size = parseInt(document.getElementById('perm-size-setting').value, 10);
+    const bold = document.getElementById('perm-bold-setting').checked;
     saveSetting('permFont', font);
-    updatePermPreview(font, size);
+    updatePermPreview(font, size, bold);
   });
 
   // Permutations size
   document.getElementById('perm-size-setting').addEventListener('input', (e) => {
     const size = parseInt(e.target.value, 10);
     const font = document.getElementById('perm-font-setting').value;
+    const bold = document.getElementById('perm-bold-setting').checked;
     saveSetting('permSize', size);
-    updatePermPreview(font, size);
+    updatePermPreview(font, size, bold);
+  });
+
+  // Permutations bold
+  document.getElementById('perm-bold-setting').addEventListener('change', (e) => {
+    const bold = e.target.checked;
+    const font = document.getElementById('perm-font-setting').value;
+    const size = parseInt(document.getElementById('perm-size-setting').value, 10);
+    saveSetting('permBold', bold);
+    updatePermPreview(font, size, bold);
   });
 
   // Notes font
   document.getElementById('notes-font-setting').addEventListener('change', (e) => {
     const font = e.target.value;
     const size = parseInt(document.getElementById('notes-size-setting').value, 10);
+    const bold = document.getElementById('notes-bold-setting').checked;
     saveSetting('notesFont', font);
-    updateNotesPreview(font, size);
+    updateNotesPreview(font, size, bold);
   });
 
   // Notes size
   document.getElementById('notes-size-setting').addEventListener('input', (e) => {
     const size = parseInt(e.target.value, 10);
     const font = document.getElementById('notes-font-setting').value;
+    const bold = document.getElementById('notes-bold-setting').checked;
     saveSetting('notesSize', size);
-    updateNotesPreview(font, size);
+    updateNotesPreview(font, size, bold);
+  });
+
+  // Notes bold
+  document.getElementById('notes-bold-setting').addEventListener('change', (e) => {
+    const bold = e.target.checked;
+    const font = document.getElementById('notes-font-setting').value;
+    const size = parseInt(document.getElementById('notes-size-setting').value, 10);
+    saveSetting('notesBold', bold);
+    updateNotesPreview(font, size, bold);
   });
 }
 
@@ -131,16 +149,18 @@ function setupListeners() {
 // Live preview
 // ---------------------------------------------------------------------------
 
-function updatePermPreview(font, size) {
+function updatePermPreview(font, size, bold) {
   const el = document.getElementById('perm-preview');
-  el.style.fontFamily = fontStacks[font] || fontStacks['monospace'];
-  el.style.fontSize   = size + 'px';
+  el.style.fontFamily  = fontStacks[font] || fontStacks['monospace'];
+  el.style.fontSize    = size + 'px';
+  el.style.fontWeight  = bold ? '700' : '';
 }
 
-function updateNotesPreview(font, size) {
+function updateNotesPreview(font, size, bold) {
   const el = document.getElementById('notes-preview');
-  el.style.fontFamily = fontStacks[font] || fontStacks['sans-serif'];
-  el.style.fontSize   = size + 'px';
+  el.style.fontFamily  = fontStacks[font] || fontStacks['sans-serif'];
+  el.style.fontSize    = size + 'px';
+  el.style.fontWeight  = bold ? '700' : '';
 }
 
 // ---------------------------------------------------------------------------
