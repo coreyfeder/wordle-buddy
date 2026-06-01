@@ -135,7 +135,7 @@ async function injectPanel() {
     setupEventListeners();
     restoreNotes();
     restorePosition();
-    // Settings disabled for now - applyStoredSettings();
+    applyStoredSettings();
     
     console.log('Panel fully initialized');
   } catch (error) {
@@ -152,9 +152,6 @@ function setupEventListeners() {
 
   // Make panel draggable by header
   setupDragging();
-
-  // Setup settings - DISABLED FOR NOW
-  // setupSettings();
 
   // Toggle panel
   const toggleBtn = document.getElementById('toggle-panel');
@@ -424,85 +421,6 @@ const defaultSettings = {
   notesSize: 'medium'
 };
 
-function setupSettings() {
-  const settingsBtn = document.getElementById('settings-btn');
-  const settingsOverlay = document.getElementById('settings-overlay');
-  const closeSettings = document.getElementById('close-settings');
-
-  settingsBtn.addEventListener('click', () => {
-    settingsOverlay.classList.remove('hidden');
-    loadSettings();
-  });
-
-  closeSettings.addEventListener('click', () => {
-    settingsOverlay.classList.add('hidden');
-  });
-
-  // Close on overlay click (not content click)
-  settingsOverlay.addEventListener('click', (e) => {
-    if (e.target === settingsOverlay) {
-      settingsOverlay.classList.add('hidden');
-    }
-  });
-
-  // Setup setting change listeners
-  document.getElementById('zoom-setting').addEventListener('input', (e) => {
-    const value = e.target.value;
-    document.getElementById('zoom-value').textContent = value + '%';
-    applySetting('zoom', value);
-  });
-
-  document.getElementById('color-scheme-setting').addEventListener('change', (e) => {
-    applySetting('colorScheme', e.target.value);
-  });
-
-  document.getElementById('show-details-setting').addEventListener('change', (e) => {
-    applySetting('showDetails', e.target.checked);
-  });
-
-  document.getElementById('show-headers-setting').addEventListener('change', (e) => {
-    applySetting('showHeaders', e.target.checked);
-  });
-
-  document.getElementById('perm-font-setting').addEventListener('change', (e) => {
-    applySetting('permFont', e.target.value);
-  });
-
-  document.getElementById('perm-size-setting').addEventListener('change', (e) => {
-    applySetting('permSize', e.target.value);
-  });
-
-  document.getElementById('notes-font-setting').addEventListener('change', (e) => {
-    applySetting('notesFont', e.target.value);
-  });
-
-  document.getElementById('notes-size-setting').addEventListener('change', (e) => {
-    applySetting('notesSize', e.target.value);
-  });
-}
-
-function loadSettings() {
-  chrome.storage.local.get(['settings'], (result) => {
-    const settings = { ...defaultSettings, ...(result.settings || {}) };
-    
-    // Update UI controls
-    document.getElementById('zoom-setting').value = settings.zoom;
-    document.getElementById('zoom-value').textContent = settings.zoom + '%';
-    document.getElementById('color-scheme-setting').value = settings.colorScheme;
-    document.getElementById('show-details-setting').checked = settings.showDetails;
-    document.getElementById('show-headers-setting').checked = settings.showHeaders;
-    document.getElementById('perm-font-setting').value = settings.permFont;
-    document.getElementById('perm-size-setting').value = settings.permSize;
-    document.getElementById('notes-font-setting').value = settings.notesFont;
-    document.getElementById('notes-size-setting').value = settings.notesSize;
-
-    // Apply all settings to the panel
-    Object.keys(settings).forEach(key => {
-      applySettingToUI(key, settings[key]);
-    });
-  });
-}
-
 function applyStoredSettings() {
   // Apply settings from storage without touching the settings UI
   chrome.storage.local.get(['settings'], (result) => {
@@ -512,14 +430,6 @@ function applyStoredSettings() {
     Object.keys(settings).forEach(key => {
       applySettingToUI(key, settings[key]);
     });
-  });
-}
-
-function applySetting(key, value) {
-  chrome.storage.local.get(['settings'], (result) => {
-    const settings = { ...defaultSettings, ...(result.settings || {}), [key]: value };
-    chrome.storage.local.set({ settings });
-    applySettingToUI(key, value);
   });
 }
 
