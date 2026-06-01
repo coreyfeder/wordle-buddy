@@ -416,9 +416,9 @@ const defaultSettings = {
   showDetails: true,
   showHeaders: true,
   permFont: 'monospace',
-  permSize: 'medium',
+  permSize: 16,         // pixels; keep in sync with options.js defaultSettings
   notesFont: 'sans-serif',
-  notesSize: 'medium'
+  notesSize: 14          // pixels; keep in sync with options.js defaultSettings
 };
 
 function applyStoredSettings() {
@@ -489,7 +489,7 @@ function applySettingToUI(key, value) {
       const fontMap = {
         'monospace': "'Courier New', monospace",
         'sans-serif': "'Clear Sans', Arial, sans-serif",
-        'system': 'system-ui'
+        'serif': 'Georgia, serif'
       };
       panel.querySelectorAll('.permutation-item').forEach(el => {
         el.style.fontFamily = fontMap[value];
@@ -497,13 +497,8 @@ function applySettingToUI(key, value) {
       break;
     
     case 'permSize':
-      const permSizeMap = {
-        'small': '13px',
-        'medium': '15px',
-        'large': '18px'
-      };
       panel.querySelectorAll('.permutation-item').forEach(el => {
-        el.style.fontSize = permSizeMap[value];
+        el.style.fontSize = `${value}px`;
       });
       break;
     
@@ -511,7 +506,7 @@ function applySettingToUI(key, value) {
       const notesFontMap = {
         'sans-serif': "'Clear Sans', Arial, sans-serif",
         'monospace': "'Courier New', monospace",
-        'system': 'system-ui'
+        'serif': 'Georgia, serif'
       };
       const notesArea = panel.querySelector('.notes-area');
       if (notesArea) {
@@ -520,14 +515,9 @@ function applySettingToUI(key, value) {
       break;
     
     case 'notesSize':
-      const notesSizeMap = {
-        'small': '12px',
-        'medium': '13px',
-        'large': '15px'
-      };
       const notesTextarea = panel.querySelector('.notes-area');
       if (notesTextarea) {
-        notesTextarea.style.fontSize = notesSizeMap[value];
+        notesTextarea.style.fontSize = `${value}px`;
       }
       break;
   }
