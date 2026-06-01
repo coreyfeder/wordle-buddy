@@ -411,14 +411,15 @@ function updateConstraintsDisplay() {
 
 // Settings Management
 const defaultSettings = {
-  zoom: 100,
   colorScheme: 'auto',
   showDetails: true,
   showHeaders: true,
   permFont: 'monospace',
   permSize: 16,         // pixels; keep in sync with options.js defaultSettings
-  notesFont: 'sans-serif',
-  notesSize: 14          // pixels; keep in sync with options.js defaultSettings
+  permBold: false,
+  notesFont: 'monospace', // keep in sync with options.js defaultSettings
+  notesSize: 14,         // pixels; keep in sync with options.js defaultSettings
+  notesBold: false
 };
 
 function applyStoredSettings() {
@@ -441,36 +442,53 @@ function applySettingToUI(key, value) {
       panel.style.fontSize = `${value}%`;
       break;
     
-    case 'colorScheme':
-      if (value === 'light') {
-        panel.style.backgroundColor = 'white';
-        panel.style.color = '#333';
-      } else if (value === 'dark') {
+    case 'colorScheme': {
+      // Reset all inline colour overrides first so switching between modes is clean
+      panel.style.backgroundColor = '';
+      panel.style.color = '';
+      panel.querySelectorAll('.section h4').forEach(el => { el.style.color = ''; });
+      panel.querySelectorAll('.info-box').forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.borderColor = '';
+      });
+      panel.querySelectorAll('.permutation-item').forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.color = '';
+        el.style.borderColor = '';
+      });
+      const csNotes = panel.querySelector('.notes-area');
+      if (csNotes) {
+        csNotes.style.backgroundColor = '';
+        csNotes.style.color = '';
+        csNotes.style.borderColor = '';
+      }
+
+      if (value === 'dark') {
         panel.style.backgroundColor = '#1a1a1a';
         panel.style.color = '#e0e0e0';
+        panel.querySelectorAll('.section h4').forEach(el => { el.style.color = '#e0e0e0'; });
         panel.querySelectorAll('.info-box').forEach(el => {
           el.style.backgroundColor = '#2a2a2a';
           el.style.borderColor = '#444';
         });
-        panel.querySelector('.notes-area').style.backgroundColor = '#2a2a2a';
-        panel.querySelector('.notes-area').style.color = '#e0e0e0';
-        panel.querySelector('.notes-area').style.borderColor = '#444';
-      } else {
-        // Auto - reset to default
-        panel.style.backgroundColor = '';
-        panel.style.color = '';
-        panel.querySelectorAll('.info-box').forEach(el => {
-          el.style.backgroundColor = '';
-          el.style.borderColor = '';
+        panel.querySelectorAll('.permutation-item').forEach(el => {
+          el.style.backgroundColor = '#2a2a2a';
+          el.style.color = '#e0e0e0';
+          el.style.borderColor = '#444';
         });
-        const notesArea = panel.querySelector('.notes-area');
-        if (notesArea) {
-          notesArea.style.backgroundColor = '';
-          notesArea.style.color = '';
-          notesArea.style.borderColor = '';
+        if (csNotes) {
+          csNotes.style.backgroundColor = '#2a2a2a';
+          csNotes.style.color = '#e0e0e0';
+          csNotes.style.borderColor = '#444';
         }
+      } else if (value === 'light') {
+        panel.style.backgroundColor = 'white';
+        panel.style.color = '#333';
+        // h4, info-box, permutation-item all reset to CSS defaults above
       }
+      // 'auto': reset only — already done
       break;
+    }
     
     case 'showDetails':
       const detailsSection = panel.querySelector('.section:has(#constraints-header)');
@@ -502,6 +520,18 @@ function applySettingToUI(key, value) {
       });
       break;
     
+    case 'permBold':
+      panel.querySelectorAll('.permutation-item').forEach(el => {
+        el.style.fontWeight = value ? '700' : '';
+      });
+      break;
+
+    case 'notesBold': {
+      const notesBoldEl = panel.querySelector('.notes-area');
+      if (notesBoldEl) notesBoldEl.style.fontWeight = value ? '700' : '';
+      break;
+    }
+
     case 'notesFont':
       const notesFontMap = {
         'sans-serif': "'Clear Sans', Arial, sans-serif",
