@@ -4,6 +4,73 @@ All notable changes to this project are documented here.
 
 ---
 
+## v1.3.0 — June 2, 2026
+
+### Bug Fixes
+
+**Dark mode: headers and permutation items now correctly light-coloured**
+Both `.section h4` and `.permutation-item` have explicit CSS colour declarations that override inherited panel colour. The `colorScheme` handler now resets all inline overrides first, then applies the target theme, explicitly targeting both element types.
+
+**Panel now rolls up when collapsed**
+Previously the content hid but the panel shell stayed full height. On collapse, the panel now snapshots its current height and switches to `height: auto` (shrinking to the header only). The `ResizeObserver` ignores events while collapsed to avoid overwriting the saved expanded height.
+
+### New Features
+
+**Settings page fully implemented**
+`options.js` now loads and saves all settings via `chrome.storage.local`. All controls are wired: colour scheme, show/hide headers and constraint details, permutation and notes font/size/bold. Typography controls update a live preview. Settings auto-save on every change with a brief “✓ Saved” indicator.
+
+**Bold font option**
+Bold toggle added for permutations and notes typography independently, reflected live in the settings preview and applied immediately to the panel.
+
+**Live panel updates when settings change**
+A `chrome.storage.onChanged` listener in `content.js` applies changes to the open panel immediately — no page reload required.
+
+**Panel size persistence**
+Panel dimensions are now saved to `chrome.storage.local` under `panelSize` and restored on load, alongside the existing position persistence. Uses a `ResizeObserver` with a 300ms debounce.
+
+### Changes
+
+**Panel deferred until game is active**
+The panel no longer appears on the NYT splash screen. A `MutationObserver` watches silently for the game board; the panel injects and activates the moment the game is ready. Removed `showWaitingForGame()` and `showGameLoadError()` and the “Buddy active!” status flash — the panel appearing is sufficient signal.
+
+**Zoom control removed**
+The zoom slider was removed from the settings page. Explicit font size controls and a resizable panel address the same need more precisely.
+
+**Default notes font changed to monospace**
+Consistent with the fixed-length word-pattern context of the permutations display. Notes font dropdown reordered: Monospace listed first.
+
+### Performance
+
+**Replaced `waitForGameReady` polling with MutationObserver**
+Eliminates the 500ms `setInterval` used to detect game load. The observer disconnects itself once the game is ready.
+
+**Removed redundant `setInterval` from `startMonitoring`**
+The `MutationObserver` watching `data-state` and `class` changes across the subtree catches all tile evaluations. The extension now has zero polling loops running at any point.
+
+### Cleanup
+
+- Renamed `_archive/` → `archive/` (Chrome rejects directory names starting with `_`)
+- Removed deprecated in-panel settings overlay (panel.html, content.js, content.css)
+- Removed dead status section HTML and CSS
+- Added commit and documentation conventions to `QUICK_REFERENCE.md`
+
+### Storage Keys
+
+- `panelSize` — `{width, height}` pixel dimensions of panel *(new)*
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `manifest.json` | Version bump to 1.3.0 |
+| `content.js` | Settings listener; panel deferred; collapse fix; size persistence; polling removed; dead functions removed |
+| `content.css` | Header padding reduced; dead overlay and status CSS removed |
+| `options.js` | Fully implemented (was stub) |
+| `options.html` | Bold checkboxes added; zoom removed; notes font reordered |
+| `panel.html` | Dead status section and settings overlay removed |
+
+---
+
 ## v1.2.0 — May 17, 2026
 
 ### Bug Fixes
