@@ -269,7 +269,7 @@ function restoreNotes() {
 
 function startMonitoring() {
   isMonitoring = true;
-  
+
   const observer = new MutationObserver(() => {
     checkGameStateChange();
   });
@@ -280,8 +280,6 @@ function startMonitoring() {
     attributes: true,
     attributeFilter: ['data-state', 'class']
   });
-
-  setInterval(checkGameStateChange, 1000);
 }
 
 function checkGameStateChange() {
