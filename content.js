@@ -15,6 +15,7 @@ let permutationEngine;
 let panelElement;
 let currentGameState = null;
 let isMonitoring = false;
+let isPanelCollapsed = false;
 
 async function init() {
   console.log('Wordle Buddy initializing...');
@@ -119,8 +120,21 @@ function setupEventListeners() {
   const toggleBtn = document.getElementById('toggle-panel');
   const panelContent = panelElement.querySelector('.panel-content');
   toggleBtn.addEventListener('click', () => {
+    const collapsing = !panelContent.classList.contains('collapsed');
     panelContent.classList.toggle('collapsed');
-    toggleBtn.textContent = panelContent.classList.contains('collapsed') ? '+' : '−';
+    toggleBtn.textContent = collapsing ? '+' : '−';
+    isPanelCollapsed = collapsing;
+
+    if (collapsing) {
+      // Snapshot the current inline height (empty string if never manually resized)
+      // then shrink to just the header
+      panelElement.dataset.expandedHeight = panelElement.style.height;
+      panelElement.style.height = 'auto';
+      panelElement.style.resize = 'none';
+    } else {
+      panelElement.style.height = panelElement.dataset.expandedHeight;
+      panelElement.style.resize = '';
+    }
   });
 
   // Collapsible constraints
@@ -245,6 +259,7 @@ function restoreSize() {
 function setupSizeObserver() {
   let debounceTimer;
   const observer = new ResizeObserver(entries => {
+    if (isPanelCollapsed) return; // don't overwrite saved expanded height with collapsed height
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       const entry = entries[entries.length - 1];
