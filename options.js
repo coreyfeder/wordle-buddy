@@ -8,14 +8,14 @@
 
 const defaultSettings = {
   colorScheme: 'auto',
-  showDetails: true,
+  showDetails: false,
   showHeaders: true,
   permFont: 'monospace',
   permSize: 16,   // pixels
   permBold: false,
   notesFont: 'monospace',
   notesSize: 14,  // pixels
-  notesBold: false
+  notesBold: true
 };
 
 // Font stacks shared by preview and (via content.js) the panel.

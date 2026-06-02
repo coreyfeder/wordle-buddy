@@ -79,15 +79,15 @@ async function injectPanel() {
   try {
     const response = await fetch(chrome.runtime.getURL('panel.html'));
     const html = await response.text();
-    
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     panelElement = doc.getElementById('wordle-buddy-panel');
-    
+
     if (!panelElement) {
       throw new Error('Could not find panel element in HTML');
     }
-    
+
     document.body.appendChild(panelElement);
     console.log('Panel element added to DOM');
 
@@ -98,7 +98,7 @@ async function injectPanel() {
     setupSizeObserver();
     setupStorageListener();
     applyStoredSettings();
-    
+
     console.log('Panel fully initialized');
   } catch (error) {
     console.error('Error injecting panel:', error);
@@ -158,7 +158,7 @@ function setupDragging() {
     const rect = panelElement.getBoundingClientRect();
     initialX = e.clientX - xOffset;
     initialY = e.clientY - yOffset;
-    
+
     // Store current position
     xOffset = rect.left;
     yOffset = rect.top;
@@ -284,7 +284,7 @@ function startMonitoring() {
 
 function checkGameStateChange() {
   const newGameState = gameAdapter.readGameState();
-  
+
   if (JSON.stringify(newGameState) !== JSON.stringify(currentGameState)) {
     currentGameState = newGameState;
     handleGameStateUpdate();
@@ -366,8 +366,8 @@ function updateConstraintsDisplay() {
   const summary = permutationEngine.getSummary();
   const display = document.getElementById('constraints-display');
 
-  if (summary.greens.length === 0 && 
-      summary.yellows.length === 0 && 
+  if (summary.greens.length === 0 &&
+      summary.yellows.length === 0 &&
       summary.grays.length === 0) {
     display.innerHTML = '<p class="placeholder">No constraints yet</p>';
     return;
@@ -389,7 +389,7 @@ function updateConstraintsDisplay() {
     html += '<span class="constraint-label">Yellows:</span>';
     summary.yellows.forEach(({ letter, count, invalidPositions }) => {
       const countText = count > 1 ? ` (×${count})` : '';
-      const posText = invalidPositions.length > 0 ? 
+      const posText = invalidPositions.length > 0 ?
         ` not at ${invalidPositions.join(', ')}` : '';
       html += `<span class="yellow-letter">${letter}${countText}</span>${posText} `;
     });
@@ -412,21 +412,21 @@ function updateConstraintsDisplay() {
 // Settings Management
 const defaultSettings = {
   colorScheme: 'auto',
-  showDetails: true,
+  showDetails: false,
   showHeaders: true,
   permFont: 'monospace',
   permSize: 16,         // pixels; keep in sync with options.js defaultSettings
   permBold: false,
   notesFont: 'monospace', // keep in sync with options.js defaultSettings
   notesSize: 14,         // pixels; keep in sync with options.js defaultSettings
-  notesBold: false
+  notesBold: true
 };
 
 function applyStoredSettings() {
   // Apply settings from storage without touching the settings UI
   chrome.storage.local.get(['settings'], (result) => {
     const settings = { ...defaultSettings, ...(result.settings || {}) };
-    
+
     // Apply all settings to the panel only
     Object.keys(settings).forEach(key => {
       applySettingToUI(key, settings[key]);
@@ -436,7 +436,7 @@ function applyStoredSettings() {
 
 function applySettingToUI(key, value) {
   const panel = panelElement;
-  
+
   switch (key) {
     case 'colorScheme': {
       // Reset all inline colour overrides first so switching between modes is clean
@@ -485,20 +485,20 @@ function applySettingToUI(key, value) {
       // 'auto': reset only — already done
       break;
     }
-    
+
     case 'showDetails':
       const detailsSection = panel.querySelector('.section:has(#constraints-header)');
       if (detailsSection) {
         detailsSection.style.display = value ? 'block' : 'none';
       }
       break;
-    
+
     case 'showHeaders':
       panel.querySelectorAll('.section h4').forEach(header => {
         header.style.display = value ? 'block' : 'none';
       });
       break;
-    
+
     case 'permFont':
       const fontMap = {
         'monospace': "'Courier New', monospace",
@@ -509,13 +509,13 @@ function applySettingToUI(key, value) {
         el.style.fontFamily = fontMap[value];
       });
       break;
-    
+
     case 'permSize':
       panel.querySelectorAll('.permutation-item').forEach(el => {
         el.style.fontSize = `${value}px`;
       });
       break;
-    
+
     case 'permBold':
       panel.querySelectorAll('.permutation-item').forEach(el => {
         el.style.fontWeight = value ? '700' : '';
@@ -539,7 +539,7 @@ function applySettingToUI(key, value) {
         notesArea.style.fontFamily = notesFontMap[value];
       }
       break;
-    
+
     case 'notesSize':
       const notesTextarea = panel.querySelector('.notes-area');
       if (notesTextarea) {
