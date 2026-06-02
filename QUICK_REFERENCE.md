@@ -96,4 +96,21 @@ The `processGuess()` method in `permutationEngine.js` is the core algorithm. Do 
 
 ---
 
+## 📝 Commit & Documentation Conventions
+
+**Format:** semantic commits — `type(scope): subject`
+- Common types: `feat`, `fix`, `refactor`, `docs`, `style`, `chore`
+- `feat` = new capability; `fix` = something broken or not matching design intent
+
+**Length:** as short as the change allows
+- If the subject line covers it, stop there
+- A 1–2 sentence body is the ceiling; extended context belongs in a PR description, not a commit
+
+**Commit message vs. code comment:**
+- Commit message = *what* changed and *why it needed to change*
+- Code comment = *why it's written this way* (the non-obvious reasoning a reader would question)
+- Detail belongs in the code, where it's read in context; commit messages are scanned, not studied
+
+---
+
 **Read `SESSION_HANDOFF.md` for full technical details.**
