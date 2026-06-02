@@ -18,24 +18,20 @@ let isMonitoring = false;
 
 async function init() {
   console.log('Wordle Buddy initializing...');
-  
+
   try {
     gameAdapter = new WordleGameAdapter();
     permutationEngine = new PermutationEngine();
 
-    await injectPanel();
-    console.log('Panel injected');
-
-    showWaitingForGame();
-
+    // Panel is not injected until the game is actually ready —
+    // nothing appears on the splash screen.
     waitForGameReady()
-      .then(() => {
-        console.log('Game ready, activating buddy...');
+      .then(async () => {
+        await injectPanel();
         activateBuddy();
       })
       .catch(error => {
-        console.error('Game load timeout:', error);
-        showGameLoadError();
+        console.error('Wordle Buddy: game never loaded', error);
       });
 
     console.log('Wordle Buddy initialized');
@@ -46,72 +42,35 @@ async function init() {
 
 function waitForGameReady() {
   return new Promise((resolve, reject) => {
-    console.log('Waiting for game to be ready...');
-    let attempts = 0;
-    const maxAttempts = 120;
-    
-    const checkReady = setInterval(() => {
-      attempts++;
-      
+    // Already ready (e.g. extension reloaded mid-game)
+    if (gameAdapter.isGameReady()) {
+      resolve();
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      observer.disconnect();
+      reject(new Error('Timed out waiting for game'));
+    }, 60000);
+
+    const observer = new MutationObserver(() => {
       if (gameAdapter.isGameReady()) {
-        console.log('Game is ready!');
-        clearInterval(checkReady);
+        clearTimeout(timeoutId);
+        observer.disconnect();
         resolve();
-      } else if (attempts >= maxAttempts) {
-        console.error('Timeout waiting for game to load');
-        clearInterval(checkReady);
-        reject(new Error('Game load timeout'));
-      } else if (attempts % 10 === 0) {
-        console.log(`Still waiting for game... (attempt ${attempts}/${maxAttempts})`);
       }
-    }, 500);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-state']
+    });
   });
 }
 
-function showWaitingForGame() {
-  const statusSection = document.getElementById('status-section');
-  const statusDisplay = document.getElementById('status-display');
-  if (statusDisplay) {
-    statusSection.style.display = 'block';
-    statusDisplay.innerHTML = `
-      <div style="background: #fff8e1; padding: 12px; border-radius: 4px; border: 1px solid #ffc107;">
-        <strong>⏳ Waiting for game...</strong><br>
-        <span style="font-size: 12px;">Click "Play" on the Wordle page to activate</span>
-      </div>
-    `;
-  }
-}
-
-function showGameLoadError() {
-  const statusSection = document.getElementById('status-section');
-  const statusDisplay = document.getElementById('status-display');
-  if (statusDisplay) {
-    statusSection.style.display = 'block';
-    statusDisplay.innerHTML = `
-      <div style="background: #ffebee; padding: 12px; border-radius: 4px; border: 1px solid #f44336;">
-        <strong>⚠️ Game not detected</strong><br>
-        <span style="font-size: 12px;">Click "Play" and refresh if needed</span>
-      </div>
-    `;
-  }
-}
-
 function activateBuddy() {
-  const statusSection = document.getElementById('status-section');
-  const statusDisplay = document.getElementById('status-display');
-  if (statusDisplay) {
-    statusSection.style.display = 'block';
-    statusDisplay.innerHTML = `
-      <div style="background: #e8f5e9; padding: 12px; border-radius: 4px; border: 1px solid #6aaa64;">
-        <strong>✓ Buddy active!</strong>
-      </div>
-    `;
-    setTimeout(() => {
-      statusDisplay.innerHTML = '';
-      statusSection.style.display = 'none';
-    }, 3000);
-  }
-  
   startMonitoring();
   console.log('Wordle Buddy fully activated!');
 }

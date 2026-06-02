@@ -141,12 +141,6 @@
   font-style: italic;
 }
 
-.status-box {
-  font-size: 12px;
-  color: #666;
-  min-height: 20px;
-}
-
 /* Permutations Display */
 .permutation-list {
   display: flex;
