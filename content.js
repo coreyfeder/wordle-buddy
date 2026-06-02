@@ -137,6 +137,7 @@ async function injectPanel() {
     restorePosition();
     restoreSize();
     setupSizeObserver();
+    setupStorageListener();
     applyStoredSettings();
     
     console.log('Panel fully initialized');
@@ -252,6 +253,19 @@ function restorePosition() {
       panelElement.style.right = 'auto';
       panelElement.style.bottom = 'auto';
     }
+  });
+}
+
+function setupStorageListener() {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local' || !changes.settings) return;
+    const newSettings = changes.settings.newValue || {};
+    const oldSettings = changes.settings.oldValue || {};
+    Object.keys(newSettings).forEach(key => {
+      if (newSettings[key] !== oldSettings[key]) {
+        applySettingToUI(key, newSettings[key]);
+      }
+    });
   });
 }
 
