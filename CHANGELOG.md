@@ -4,6 +4,46 @@ All notable changes to this project are documented here.
 
 ---
 
+## v1.4.0 — June 3, 2026
+
+### Bug Fixes
+
+**Panel drag constrained to viewport**
+Drag now clamps to viewport bounds so the header can never be moved off-screen. `restorePosition()` also clamps stored coordinates via `requestAnimationFrame`, so any previously saved out-of-bounds position self-corrects on next load.
+
+**Panel resize constrained to viewport bottom**
+`updateMaxHeight()` sets `maxHeight = viewport height − panel top` so the native resize handle can never push the bottom edge below the screen. Called after drag, after position restore, and on window resize.
+
+### New Features
+
+**Game-status messages**
+Three distinct end-of-game states replace the old permutation-based message:
+- *Won* (all tiles correct): "Great job!" banner, permutations hidden
+- *Lost* (all rows used, not won): "Better luck next time." banner, permutations remain visible
+- *Constrained* (one fully-determined permutation, still playing): "Only one possible answer now!" banner, permutations hidden — preserves the player's sense of solving it themselves
+
+Banner is a separate element above the permutations box, styled per state (green / gray / amber).
+
+**Reset to Defaults button**
+Settings page now has a Reset to Defaults button. Overwrites only the `settings` storage key — notes, panel position, and panel size are untouched. Requires confirmation.
+
+**Visible resize handle indicator**
+`pointer-events: none` overlay with a diagonal stripe pattern makes the resize handle discoverable without interfering with the browser's native resize behaviour.
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `manifest.json` | Version bump to 1.4.0 |
+| `content.js` | Drag/resize viewport constraints; game-status detection; updated display function |
+| `content.css` | Game-status banner styles; resize indicator styles |
+| `gameAdapter.js` | `readGameState()` now returns `totalRows` |
+| `panel.html` | Banner element added; permutations box restructured; resize indicator div |
+| `options.html` | Reset to Defaults button and styles |
+| `options.js` | Reset to Defaults listener |
+
+---
+
 ## v1.3.0 — June 2, 2026
 
 ### Bug Fixes
