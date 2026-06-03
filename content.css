@@ -269,3 +269,20 @@
   display: none;
 }
 
+.resize-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;  /* native resize handle underneath remains active */
+  border-radius: 0 0 6px 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 3px,
+    rgba(120, 120, 120, 0.55) 3px,
+    rgba(120, 120, 120, 0.55) 4.5px
+  );
+}
+
