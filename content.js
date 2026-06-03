@@ -339,38 +339,58 @@ function handleGameStateUpdate() {
     permutationEngine.processGuess(guess.word, guess.evaluations);
   });
 
+  // Determine game status from guess outcomes
+  const lastGuess  = completedGuesses[completedGuesses.length - 1];
+  const isWon  = lastGuess && lastGuess.evaluations.every(e => e === 'correct');
+  const isLost = !isWon && completedGuesses.length > 0 &&
+                 completedGuesses.length >= currentGameState.totalRows;
+  const gameStatus = isWon ? 'won' : isLost ? 'lost' : 'playing';
+
   // Generate and display permutations
   const permutations = permutationEngine.generatePermutations();
-  updatePermutationsDisplay(permutations);
+  updatePermutationsDisplay(permutations, gameStatus);
 
   // Update constraints display
   updateConstraintsDisplay();
 }
 
-function updatePermutationsDisplay(permutations) {
+function updatePermutationsDisplay(permutations, gameStatus) {
   const display = document.getElementById('permutations-display');
-  const summary = permutationEngine.getSummary();
+  const banner  = document.getElementById('game-status-banner');
+  const permBox = document.getElementById('permutations-box');
+
+  // Reset
+  banner.className      = 'game-status-banner hidden';
+  permBox.style.display = '';
+
+  if (gameStatus === 'won') {
+    banner.textContent    = 'Great job!';
+    banner.className      = 'game-status-banner won';
+    permBox.style.display = 'none';
+    return;
+  }
+
+  if (gameStatus === 'lost') {
+    banner.textContent = 'Better luck next time.';
+    banner.className   = 'game-status-banner lost';
+    // permutations box stays visible — fall through to normal display
+  }
 
   if (permutations.length === 0) {
     display.innerHTML = '<p class="placeholder">Play a word to see permutations</p>';
     return;
   }
 
-  // Special message when only one permutation remains AND it's fully filled
-  if (permutations.length === 1 && !permutations[0].includes('_')) {
-    const excludedHtml = summary.grays.length > 0
-      ? `<p class="permutation-count" style="margin-top: 12px; color: #333;">Excluded: ${summary.grays.sort().join(' ')}</p>`
-      : '';
-    display.innerHTML = `
-      <div style="background: #e8f5e9; padding: 16px; border-radius: 4px; border: 1px solid #6aaa64; text-align: center;">
-        <p style="margin: 0; font-size: 15px; font-weight: 600; color: #6aaa64;">✨ You know all you need to know! ✨</p>
-        <p style="margin: 8px 0 0 0; font-size: 13px; color: #666;">Put the pieces together for that victorious feeling!</p>
-      </div>
-      ${excludedHtml}
-    `;
+  // Single fully-determined permutation while still playing
+  if (gameStatus === 'playing' && permutations.length === 1 && !permutations[0].includes('_')) {
+    banner.textContent    = 'Only one possible answer now!';
+    banner.className      = 'game-status-banner constrained';
+    permBox.style.display = 'none';
     return;
   }
 
+  // Normal permutation list
+  const summary = permutationEngine.getSummary();
   const maxDisplay = 100;
   const displayPermutations = permutations.slice(0, maxDisplay);
   const hasMore = permutations.length > maxDisplay;
@@ -381,17 +401,14 @@ function updatePermutationsDisplay(permutations) {
   });
   html += '</div>';
 
-  // Add count and excluded letters
   if (hasMore) {
     html += `<p class="permutation-count">Showing first ${maxDisplay} of ${permutations.length} permutations</p>`;
   } else if (permutations.length > 1) {
     html += `<p class="permutation-count">${permutations.length} possible permutations</p>`;
   }
 
-  // Add excluded letters if any
   if (summary.grays.length > 0) {
-    const excludedText = summary.grays.sort().join(' ');
-    html += `<p class="permutation-count" style="margin-top: 4px; color: #333;">Excluded: ${excludedText}</p>`;
+    html += `<p class="permutation-count" style="margin-top: 4px; color: #333;">Excluded: ${summary.grays.sort().join(' ')}</p>`;
   }
 
   display.innerHTML = html;

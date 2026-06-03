@@ -72,6 +72,7 @@ class WordleGameAdapter {
 
     return {
       wordLength,
+      totalRows: rows.length,
       completedGuesses
     };
   }
