@@ -99,6 +99,7 @@ async function injectPanel() {
     setupSizeObserver();
     setupStorageListener();
     applyStoredSettings();
+    requestAnimationFrame(updateMaxHeight); // set initial maxHeight from CSS default position
 
     console.log('Panel fully initialized');
   } catch (error) {
@@ -136,6 +137,9 @@ function setupEventListeners() {
       panelElement.style.resize = '';
     }
   });
+
+  // Keep maxHeight in sync when the browser window is resized
+  window.addEventListener('resize', updateMaxHeight);
 
   // Collapsible constraints
   const constraintsHeader = document.getElementById('constraints-header');
@@ -186,13 +190,15 @@ function setupDragging() {
   function drag(e) {
     if (isDragging) {
       e.preventDefault();
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
+
+      // Clamp so the header stays within the viewport — prevents the panel
+      // from being dragged to an unreachable position
+      currentX = Math.max(0, Math.min(window.innerWidth  - panelElement.offsetWidth,  e.clientX - initialX));
+      currentY = Math.max(0, Math.min(window.innerHeight - header.offsetHeight,        e.clientY - initialY));
 
       xOffset = currentX;
       yOffset = currentY;
 
-      // Update position
       panelElement.style.left = `${currentX}px`;
       panelElement.style.top = `${currentY}px`;
       panelElement.style.right = 'auto';
@@ -209,6 +215,7 @@ function setupDragging() {
 
       // Save position
       savePosition(currentX, currentY);
+      updateMaxHeight(); // bottom edge can't exceed viewport from new position
     }
   }
 }
@@ -221,10 +228,17 @@ function restorePosition() {
   chrome.storage.local.get(['panelPosition'], (result) => {
     if (result.panelPosition) {
       const { x, y } = result.panelPosition;
-      panelElement.style.left = `${x}px`;
-      panelElement.style.top = `${y}px`;
-      panelElement.style.right = 'auto';
-      panelElement.style.bottom = 'auto';
+      // Defer until after first paint so offsetWidth/Height are reliable;
+      // also clamps any stored out-of-bounds position back into the viewport
+      requestAnimationFrame(() => {
+        const clampedX = Math.max(0, Math.min(window.innerWidth  - panelElement.offsetWidth,  x));
+        const clampedY = Math.max(0, Math.min(window.innerHeight - panelElement.offsetHeight, y));
+        panelElement.style.left   = `${clampedX}px`;
+        panelElement.style.top    = `${clampedY}px`;
+        panelElement.style.right  = 'auto';
+        panelElement.style.bottom = 'auto';
+        updateMaxHeight();
+      });
     }
   });
 }
@@ -240,6 +254,12 @@ function setupStorageListener() {
       }
     });
   });
+}
+
+function updateMaxHeight() {
+  // Constrain resize so the bottom edge can't extend past the viewport
+  const top = panelElement.getBoundingClientRect().top;
+  panelElement.style.maxHeight = `${window.innerHeight - top}px`;
 }
 
 function saveSize(width, height) {

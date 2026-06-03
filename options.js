@@ -46,9 +46,7 @@ function loadSettings() {
 }
 
 function applyToControls(settings) {
-  document.getElementById('zoom-setting').value        = settings.zoom;
-  document.getElementById('zoom-value').textContent    = settings.zoom + '%';
-  document.getElementById('color-scheme-setting').value  = settings.colorScheme;
+  document.getElementById('color-scheme-setting').value   = settings.colorScheme;
   document.getElementById('show-headers-setting').checked = settings.showHeaders;
   document.getElementById('show-details-setting').checked = settings.showDetails;
   document.getElementById('perm-font-setting').value   = settings.permFont;
@@ -142,6 +140,18 @@ function setupListeners() {
     const size = parseInt(document.getElementById('notes-size-setting').value, 10);
     saveSetting('notesBold', bold);
     updateNotesPreview(font, size, bold);
+  });
+
+  // Reset to defaults
+  document.getElementById('reset-defaults-btn').addEventListener('click', () => {
+    if (!confirm('Reset all settings to defaults? Your notes will not be affected.')) return;
+    // Overwrites only the settings key — userNotes, panelPosition, panelSize untouched
+    chrome.storage.local.set({ settings: { ...defaultSettings } }, () => {
+      applyToControls(defaultSettings);
+      updatePermPreview(defaultSettings.permFont, defaultSettings.permSize, defaultSettings.permBold);
+      updateNotesPreview(defaultSettings.notesFont, defaultSettings.notesSize, defaultSettings.notesBold);
+      showSaveIndicator();
+    });
   });
 }
 
