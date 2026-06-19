@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 
 ---
 
-## v1.4.0 — June 3, 2026
+## v1.4.0 — 2026-06-03
 
 ### Bug Fixes
 
@@ -44,7 +44,7 @@ Settings page now has a Reset to Defaults button. Overwrites only the `settings`
 
 ---
 
-## v1.3.0 — June 2, 2026
+## v1.3.0 — 2026-06-02
 
 ### Bug Fixes
 
@@ -111,7 +111,7 @@ The `MutationObserver` watching `data-state` and `class` changes across the subt
 
 ---
 
-## v1.2.0 — May 17, 2026
+## v1.2.0 — 2026-05-17
 
 ### Bug Fixes
 
@@ -195,7 +195,7 @@ Default settings object (defined in `content.js`, not yet connected to options p
 
 ---
 
-## v1.1.0 — May 15, 2026
+## v1.1.0 — 2026-05-15
 
 Initial working release.
 
