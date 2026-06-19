@@ -17,7 +17,7 @@ Use `NEW_SESSION_INIT.md` for the exact copy-paste initialization prompt.
 **Core Logic**:
 - `permutationEngine.js` — THE BRAIN (especially `processGuess()`)
 - `gameAdapter.js` — Reads Wordle DOM
-- `content.js` — UI coordinator, drag logic, settings scaffolding
+- `content.js` — UI coordinator, drag logic, live settings listener
 
 **Settings**:
 - `options.html` — Settings page UI

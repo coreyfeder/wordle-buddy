@@ -207,7 +207,7 @@ Uses multiple fallback selectors to handle NYT CSS changes. Tile evaluation read
 ### `panel.html`
 
 **Structure** (top to bottom):
-1. Panel header (drag handle, minimize button, settings button ⚙️)
+1. Panel header (drag handle, minimize button)
 2. Game-status banner (above the permutations box; shown only in won / lost / one-answer states)
 3. Possible Permutations
 4. Your Notes (textarea, expands to fill remaining space)
@@ -303,11 +303,10 @@ Controls: colour scheme (Auto / Light / Dark), show/hide headers and constraint 
 
 Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to change as features are scoped and built.
 
-### Foundational
-
-- **Settings page completion** (`options.js`) — prerequisite for every option-based feature below. Opacity, all-caps, and colorblind toggles all read/write `chrome.storage.local` through the settings page.
-
 ### Planned
+
+**Settings access from the extension popup**
+- The options page is currently reachable only through the browser's Extension Manager. Add a link/button in the popup (`popup.html`) that calls `chrome.runtime.openOptionsPage()`.
 
 **Accessibility** — mirror NYT's semantic labels and ARIA schema wherever possible. Inspect the live game DOM at implementation time; NYT's markup changes. Validation requires testing with a real screen reader (NVDA on Windows, VoiceOver on Mac) — spec compliance is not the same as a good spoken experience. Subunits:
 - State not conveyed by color alone (WCAG 1.4.1) — every green/yellow/gray also exposed as text for assistive tech. Source state is already available via `gameAdapter` reading `data-state`.
