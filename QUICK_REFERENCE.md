@@ -6,8 +6,7 @@
 > Ignore the `archive/` subdirectory — old session files, not part of active project.
 
 ## 🎯 Current Status
-✅ **FULLY FUNCTIONAL** — v1.2.0
-⚠️ **Settings page UI is built; logic not yet implemented** (`options.js` is a stub)
+✅ **FULLY FUNCTIONAL** — v1.4.0
 
 ## 🚀 Quick Start for New Session
 
@@ -20,9 +19,9 @@ Use `NEW_SESSION_INIT.md` for the exact copy-paste initialization prompt.
 - `gameAdapter.js` — Reads Wordle DOM
 - `content.js` — UI coordinator, drag logic, settings scaffolding
 
-**Settings (incomplete)**:
-- `options.html` — Settings page UI (complete)
-- `options.js` — Settings page logic (**stub, not yet implemented**)
+**Settings**:
+- `options.html` — Settings page UI
+- `options.js` — Settings page logic (loads/saves via `chrome.storage.local`)
 
 **Documentation**:
 - `SESSION_HANDOFF.md` — Complete technical context
@@ -78,14 +77,13 @@ The `processGuess()` method in `permutationEngine.js` is the core algorithm. Do 
 ✅ Repeated letter handling (maxKnown)
 ✅ Gray position exclusion (invalidPositions fix)
 ✅ Permutation generation
-✅ Victory message (hides answer when solved)
+✅ Game-status banners (won / lost / one-answer-left; answer hidden when solved)
 ✅ User notes (persist across guesses and reloads)
 ✅ Excluded letters display (sorted)
-✅ Draggable panel (position saved)
-✅ Resizable panel
-✅ Settings page UI
-
-⚠️ Settings page logic (options.js — stub only)
+✅ Draggable panel (position saved, clamped to viewport)
+✅ Resizable panel (size saved, clamped to viewport; visible resize handle)
+✅ Settings page (loads/saves via chrome.storage.local; live panel updates)
+✅ Panel deferred until game is ready (no splash-screen flash)
 
 ## 🎨 Intentionally NOT Included
 

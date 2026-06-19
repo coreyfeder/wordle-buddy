@@ -1,6 +1,6 @@
 # Wordle Buddy - Session Handoff Document
 
-## Project Status: ✅ FULLY FUNCTIONAL — v1.2.0
+## Project Status: ✅ FULLY FUNCTIONAL — v1.4.0
 
 The extension is complete and working. All core features are implemented and tested.
 Future sessions should focus on enhancements or bug fixes as they arise.
@@ -29,21 +29,19 @@ Wordle Buddy is a Chrome extension that helps users solve Wordle puzzles of any 
 - Variable word length detection (4–7 letters)
 - Permutation generation using layered constraint approach
 - Correct handling of repeated letters (follows Wordle's exact rules)
-- Victory message when only one permutation remains (hides the answer to preserve satisfaction)
+- Game-status banners — won / lost / one-answer-left, styled per state; the answer stays hidden when solved to preserve satisfaction
 - User notes area (persists between guesses and page reloads)
 - Excluded letters display (sorted alphabetically)
 - Collapsible constraint details
-- Draggable panel (drag by header; position saved and restored)
-- Resizable panel (CSS resize from bottom-right corner)
-- Settings page UI (`options.html`) — **UI complete, logic not yet implemented**
+- Draggable panel (drag by header; position saved and restored; clamped to viewport)
+- Resizable panel (size saved and restored; clamped to viewport; visible resize handle)
+- Settings page (`options.html` / `options.js`) — fully functional: loads/saves via `chrome.storage.local`, with live panel updates via `chrome.storage.onChanged`
+- Panel injection deferred until the game board is ready (MutationObserver; no splash-screen flash)
 - Works on:
   - Regular Wordle: `https://www.nytimes.com/games/wordle/*`
   - Custom puzzles: `https://www.nytimes.com/games/create/wordle/*`
   - Archived games (specific dates)
   - Excludes: `https://www.nytimes.com/games/wordle/archive` (listing page)
-
-### ⚠️ Built but Not Yet Functional
-- **Settings page** (`options.html` / `options.js`): The UI is fully designed and wired into the manifest. `options.js` is a stub with TODOs. Settings logic exists in `content.js` as disabled scaffolding (`setupSettings()` is defined but not called). Next step is implementing `options.js` and connecting it to `chrome.storage.local`.
 
 ### ❌ Intentionally NOT Included
 - Default starting words (word-length dependent)
@@ -57,15 +55,15 @@ Wordle Buddy is a Chrome extension that helps users solve Wordle puzzles of any 
 
 ```
 wordle-buddy/
-├── manifest.json          # Extension config (v1.2.0)
+├── manifest.json          # Extension config (v1.4.0)
 ├── content.js             # Main coordinator, UI updates, drag logic
 ├── gameAdapter.js         # Reads Wordle DOM, detects word length
 ├── permutationEngine.js   # Core constraint logic (THE BRAIN)
 ├── panel.html             # Injected panel UI structure
 ├── content.css            # Panel styling
 ├── popup.html             # Extension toolbar popup
-├── options.html           # Settings page UI (functional UI, stub logic)
-├── options.js             # Settings page logic (STUB — not yet implemented)
+├── options.html           # Settings page UI
+├── options.js             # Settings page logic (loads/saves via chrome.storage.local)
 ├── icon*.png              # Extension icons
 ├── CHANGELOG.md           # Version history
 └── archive/               # Old session files — ignore
@@ -177,7 +175,7 @@ getSummary()                    // Get constraint summary for display
 **Key Methods**:
 ```javascript
 detectWordLength()  // Counts tiles in first row; returns 4–7
-readGameState()     // Returns {wordLength, completedGuesses}
+readGameState()     // Returns {wordLength, completedGuesses, totalRows}
 isGameReady()       // Checks if game board exists and has tiles
 ```
 
@@ -187,47 +185,47 @@ Uses multiple fallback selectors to handle NYT CSS changes. Tile evaluation read
 
 **Main Flow**:
 1. Initialize on page load
-2. Wait for game ready (polls `isGameReady()` up to 60 seconds)
-3. Inject panel from `panel.html`
-4. Monitor game state changes via `MutationObserver` + 1s polling
+2. A `MutationObserver` watches silently for the game board (no polling)
+3. Inject panel from `panel.html` once the game is ready
+4. Monitor game-state changes via `MutationObserver` on `data-state` / `class` (zero polling loops)
 5. On state change: reset engine, reprocess all guesses, update UI
 
 **Key Functions**:
 - `handleGameStateUpdate()`: Main update loop
-- `updatePermutationsDisplay()`: Shows permutations, victory message, and excluded letters
+- `updatePermutationsDisplay()`: Shows permutations, the game-status banner, and excluded letters
 - `updateConstraintsDisplay()`: Shows greens/yellows/grays detail
-- `setupDragging()`: Mouse-based drag with position save/restore
-- `setupSettings()`: Settings overlay wiring — **currently disabled**, called nowhere
-- `applySettingToUI()`: Applies individual settings to panel DOM — **implemented but not called**
+- `setupDragging()`: Mouse-based drag with position save/restore, clamped to viewport
+- `chrome.storage.onChanged` listener: applies settings changes to the open panel live (no reload)
+- `ResizeObserver` (300ms debounce): persists panel size to `panelSize`
 
 **Storage keys used**:
 - `userNotes`: string
 - `panelPosition`: `{x, y}`
-- `settings`: settings object (written by `applySetting()`, not yet read by options page)
+- `panelSize`: `{width, height}`
+- `settings`: settings object (read and written by the options page)
 
 ### `panel.html`
 
 **Structure** (top to bottom):
 1. Panel header (drag handle, minimize button, settings button ⚙️)
-2. Possible Permutations
-3. Your Notes (textarea, expands to fill remaining space)
-4. Constraint Details (collapsible)
-5. Status (hidden when empty)
+2. Game-status banner (above the permutations box; shown only in won / lost / one-answer states)
+3. Possible Permutations
+4. Your Notes (textarea, expands to fill remaining space)
+5. Constraint Details (collapsible)
 
-**Note**: Settings button in header is present in the HTML but its click handler (`setupSettings()`) is disabled in `content.js`.
+**Note**: The in-panel settings overlay was removed in v1.3.0; settings now live entirely on the options page.
 
 ### `options.html` / `options.js`
 
-- `options.html`: Fully designed settings page. Wired into manifest as `options_page`.
-- `options.js`: Stub only. Loads, logs to console, does nothing else.
-- **Next step**: Implement `loadSettings()`, `saveSettings()`, `updatePreview()` in `options.js`.
+- `options.html`: Settings page UI. Wired into manifest as `options_page`.
+- `options.js`: Loads/saves all settings via `chrome.storage.local`, drives the live typography preview, auto-saves on change, and handles Reset to Defaults.
 
 ### `content.css`
 
 - `.permutation-item`: Compact monospace display
 - `.notes-area`: Resizable textarea (panel itself handles outer resize)
 - `.collapsible-content`: Constraint details, collapsed by default
-- `#status-section`: Hidden when empty
+- Game-status banner: per-state styling (green / gray / amber)
 - Panel uses flexbox; notes section uses `flex: 1` to fill remaining height
 
 ---
@@ -269,16 +267,9 @@ Uses multiple fallback selectors to handle NYT CSS changes. Tile evaluation read
 - Drag panel by header, reload page, verify position restored
 - Drag bottom-right corner to resize
 
-### Console Messages (Expected)
-```
-Wordle Buddy content script loaded
-Wordle Buddy initializing...
-Panel injected
-Waiting for game to be ready...
-Detected word length: 5
-Game is ready!
-✓ Buddy active!
-```
+### Console Messages
+
+Exact logging has shifted across versions — the “Buddy active!” status flash and the splash-screen waiting loop were removed in v1.3.0. Expect messages around script load, panel injection, detected word length, and game-ready.
 
 ---
 
@@ -288,35 +279,69 @@ Game is ready!
 2. **Repeated letters with grays**: Exact count detection via `absentCount > 0`
 3. **Gray letter in specific position with yellows elsewhere**: `invalidPositions` now includes absent positions
 4. **Variable word length**: Auto-detected from DOM on each state update
-5. **Splash screen**: Panel waits for "Play" button click (polls `isGameReady()`)
+5. **Splash screen**: Panel injection deferred until the game board appears (`MutationObserver`); no splash-screen flash
 6. **Archive listing page**: Excluded via manifest `exclude_matches`
 
 ---
 
-## Settings System (Current State)
+## Settings System
 
-The settings system is partially built across three locations:
+Fully implemented as of v1.3.0.
 
-| Location | State |
-|----------|-------|
-| `options.html` | UI complete |
-| `options.js` | Stub — not implemented |
-| `content.js` → `setupSettings()` | Implemented but disabled |
-| `content.js` → `applySettingToUI()` | Implemented but not called on load |
-| `chrome.storage.local` key `settings` | Written by `applySetting()` if called; never read by options page |
+| Location | Role |
+|----------|------|
+| `options.html` | Settings page UI |
+| `options.js` | Loads/saves all settings via `chrome.storage.local`; live typography preview; auto-save with a “✓ Saved” indicator; Reset to Defaults |
+| `content.js` → `chrome.storage.onChanged` listener | Applies changes to the open panel immediately (no reload) |
+| `chrome.storage.local` key `settings` | Read and written by the options page |
 
-To complete settings: implement `options.js` to read/write `chrome.storage.local` using the `settings` key and the default settings object defined in `content.js`.
+Controls: colour scheme (Auto / Light / Dark), show/hide headers and constraint details, and independent font / size / bold for permutations and notes. The zoom control was removed in v1.3.0 in favour of explicit font sizes plus the resizable panel.
 
 ---
 
-## Future Enhancement Ideas
+## Roadmap
 
-1. **Complete settings page** — implement `options.js` (highest priority unfinished item)
-2. **Word suggestions from dictionary** — filter permutations to real words; requires word list per length
-3. **Statistics tracking** — guess counts, success rate, streaks
-4. **Export/import notes** — save notes to file, share strategies
-5. **Keyboard shortcuts** — quick collapse/expand, focus notes
-6. **Remember panel size** — currently only position is saved, not dimensions
+Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to change as features are scoped and built.
+
+### Foundational
+
+- **Settings page completion** (`options.js`) — prerequisite for every option-based feature below. Opacity, all-caps, and colorblind toggles all read/write `chrome.storage.local` through the settings page.
+
+### Planned
+
+**Accessibility** — mirror NYT's semantic labels and ARIA schema wherever possible. Inspect the live game DOM at implementation time; NYT's markup changes. Validation requires testing with a real screen reader (NVDA on Windows, VoiceOver on Mac) — spec compliance is not the same as a good spoken experience. Subunits:
+- State not conveyed by color alone (WCAG 1.4.1) — every green/yellow/gray also exposed as text for assistive tech. Source state is already available via `gameAdapter` reading `data-state`.
+- Colorblind / high-contrast palette — pairs with existing light/dark mode; match NYT's orange-blue scheme.
+- Keyboard operability of all controls (WCAG 2.1.1) — collapse/settings as real buttons (Enter/Space); a keyboard path to move/reset the panel (drag and corner-resize are currently pointer-only). The roll-up already serves as a keyboard-friendly "get it out of the way."
+- One polite live region (`aria-live="polite"`) announcing a terse summary ("3 possibilities") on update — never the full permutation list, which is unusable read aloud.
+- Honor OS preferences — `prefers-color-scheme`, `prefers-reduced-motion`; `prefers-contrast` as progressive enhancement. Confirm layout survives 200% zoom (WCAG 1.4.10).
+- Landmark + headings — panel as `role="complementary"` with `aria-label`; real headings per section. Don't steal focus on inject.
+- Open question: whether to remap blank slots (`_`) to a spoken word rather than letting the screen reader say "underscore."
+
+**Panel opacity**
+- Static opacity-floor slider in settings (CSS `opacity`; reliable everywhere) plus an on/off switch.
+- In-page hover behavior: reduced opacity at rest, full on `mouseenter`, fade on `mouseleave` (optional mousemove-idle timer).
+- Explicitly NOT tracking cross-window / cross-app focus — those signals don't cleanly disambiguate and vary by OS and window manager.
+
+**Notes all-caps option**
+- Toggle to render the Notes area in all caps; default **on**.
+- Open question: visual `text-transform: uppercase` (cheapest, reversible, but copied text keeps original case) vs. transforming input on keystroke (changes the stored value).
+
+**Click-to-dismiss permutations**
+- Click a permutation to toggle it "unlikely"; gray it out rather than hide, so it stays visible to un-flag.
+- Purely a user-judgment overlay — does not change engine constraints. Stays in-spirit: organizes the user's reasoning, injects no knowledge.
+- v1: dismiss the exact pattern. Store dismissed patterns by pattern string in `chrome.storage.local`; reapply on each regeneration, since the list is rebuilt after every guess.
+- v2 (bigger lift): subsumption — auto-dismiss any later permutation that refines a dismissed pattern (every non-blank position of the dismissed pattern matches).
+- Open questions: scope dismissals to the current puzzle and clear them on board/word reset (otherwise stale flags leak across days); whether to prune flags whose pattern is no longer generated.
+
+### Considered and declined
+
+- **Word/answer suggestions, dictionary filtering, letter-frequency analysis** — injects knowledge the player doesn't have; violates the core "show possibilities, don't solve it" principle.
+- **Repeated-letter "appears ≥N times" indicator** — redundant; every generated permutation already shows the forced repeat in valid positions.
+- **Yellow-letter "not-here" position grid** — information overload for a slender panel.
+- **Confirmed-letter position display** — NYT's own board already covers this well.
+- **Permutation-reduction timeline / stat** — misleading: permutation count is not monotonically decreasing (adding a yellow with multiple valid positions increases it).
+- **Solve journal / history** — out of scope: multi-user storage, unbounded growth, and local-vs-account confusion outweigh current demand.
 
 ---
 
