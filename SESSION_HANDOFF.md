@@ -341,9 +341,9 @@ Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to 
 - Let user click on "only one left" banner to reveal the word.
 - Don't trigger click-to-dismiss
 
-**Handle oversized permutations list**
+**Handle long permutations list**
 - When list of permutations is very long, maintain space for Notes section.
-- Open question: implementation. (Each panel has optional scroll bar? And manual vertical slider dividing panels?)
+- Open question: implementation. (Let each panel scroll if needed. Cap how small Notes area can get (by percent)? Add a center slider allowing manual vertical adjustment of panel sizes?)
 
 ### Considered and declined
 
