@@ -324,7 +324,7 @@ Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to 
 
 **Notes all-caps option**
 - Toggle to render the Notes area in all caps; default **on**.
-- Open question: visual `text-transform: uppercase` (cheapest, reversible, but copied text keeps original case) vs. transforming input on keystroke (changes the stored value).
+- Use visual `text-transform: uppercase` (cheapest, reversible, but copied text keeps original case) rather than transforming input on keystroke (changes the stored value).
 
 **Click-to-dismiss permutations**
 - Click a permutation to toggle it "unlikely"; gray it out rather than hide, so it stays visible to un-flag.
@@ -332,6 +332,9 @@ Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to 
 - v1: dismiss the exact pattern. Store dismissed patterns by pattern string in `chrome.storage.local`; reapply on each regeneration, since the list is rebuilt after every guess.
 - v2 (bigger lift): subsumption — auto-dismiss any later permutation that refines a dismissed pattern (every non-blank position of the dismissed pattern matches).
 - Open questions: scope dismissals to the current puzzle and clear them on board/word reset (otherwise stale flags leak across days); whether to prune flags whose pattern is no longer generated.
+
+**Click to reveal only word**
+- Let user click on "only one left" to reveal the word.
 
 ### Considered and declined
 
