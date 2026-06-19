@@ -329,12 +329,17 @@ Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to 
 **Click-to-dismiss permutations**
 - Click a permutation to toggle it "unlikely"; gray it out rather than hide, so it stays visible to un-flag.
 - Purely a user-judgment overlay — does not change engine constraints. Stays in-spirit: organizes the user's reasoning, injects no knowledge.
-- v1: dismiss the exact pattern. Store dismissed patterns by pattern string in `chrome.storage.local`; reapply on each regeneration, since the list is rebuilt after every guess.
-- v2 (bigger lift): subsumption — auto-dismiss any later permutation that refines a dismissed pattern (every non-blank position of the dismissed pattern matches).
-- Open questions: scope dismissals to the current puzzle and clear them on board/word reset (otherwise stale flags leak across days); whether to prune flags whose pattern is no longer generated.
+- v1: dismiss the pattern on this instance & iteration only. Maintain functionality when multiple instances exist or puzzle changes (but not URL).
+- v2: dismiss the exact pattern. Store dismissed patterns by pattern string in `chrome.storage.local`; reapply on each regeneration, since the list is rebuilt after every guess.
+- v3 (bigger lift): subsumption — auto-dismiss any later permutation that refines a dismissed pattern (every non-blank position of the dismissed pattern matches).
+- Open issues
+  - How to scope dismissals to the current puzzle, or current instance of the Buddy.
+  - How to clear them when possible: on win, on board/word change, on close, on reload, ...? (But NOT on failure while page is still open.)
+  - Whether to prune flags whose pattern is no longer generated.
 
 **Click to reveal only word**
-- Let user click on "only one left" to reveal the word.
+- Let user click on "only one left" banner to reveal the word.
+- Don't trigger click-to-dismiss
 
 **Handle oversized permutations list**
 - When list of permutations is very long, maintain space for Notes section.
