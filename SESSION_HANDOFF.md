@@ -336,6 +336,10 @@ Supersedes the earlier "Future Enhancement Ideas." Living list — expect it to 
 **Click to reveal only word**
 - Let user click on "only one left" to reveal the word.
 
+**Handle oversized permutations list**
+- When list of permutations is very long, maintain space for Notes section.
+- Open question: implementation. (Each panel has optional scroll bar? And manual vertical slider dividing panels?)
+
 ### Considered and declined
 
 - **Word/answer suggestions, dictionary filtering, letter-frequency analysis** — injects knowledge the player doesn't have; violates the core "show possibilities, don't solve it" principle.
